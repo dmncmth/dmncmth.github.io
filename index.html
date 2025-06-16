@@ -1,329 +1,514 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Team Infosec - Who is On Shift?</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    :root {
-      --s1: #4fc3f7;
-      --s2: #ffb74d;
-      --s3: #81c784;
-      --off: #e0e0e0;
-      --bg: linear-gradient(120deg, #1e3c72 0%, #2a5298 100%);
-      --card: #fff;
-      --accent: #00bcd4;
-      --shadow: 0 4px 16px #0002;
-    }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: var(--bg);
-      margin: 0;
-      min-height: 100vh;
-      color: #1a237e;
-    }
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: var(--card);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 32px 24px 24px 24px;
-    }
-    h1 {
-      text-align: center;
-      font-size: 2.1em;
-      letter-spacing: 2px;
-      margin-bottom: 0.2em;
-      color: var(--accent);
-      text-shadow: 0 2px 8px #0001;
-    }
-    h2 {
-      text-align: center;
-      font-weight: 400;
-      color: #3949ab;
-      margin-top: 0;
-    }
-    .shift-card {
-      background: linear-gradient(90deg, #e3f2fd 60%, #fce4ec 100%);
-      border-radius: 12px;
-      padding: 20px 18px;
-      margin-bottom: 22px;
-      box-shadow: 0 2px 8px #0001;
-      text-align: center;
-    }
-    .shift-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 18px;
-      margin: 16px 0 0 0;
-      padding: 0;
-      list-style: none;
-    }
-    .shift-badge {
-      display: inline-block;
-      font-size: 1.1em;
-      font-weight: bold;
-      padding: 10px 20px;
-      border-radius: 30px;
-      color: #fff;
-      box-shadow: 0 2px 8px #0001;
-      margin: 2px 0;
-      letter-spacing: 1px;
-      min-width: 110px;
-      text-align: center;
-      transition: transform 0.2s;
-    }
-    .shift-s1 { background: var(--s1); }
-    .shift-s2 { background: var(--s2); }
-    .shift-s3 { background: var(--s3); }
-    .shift-off { background: var(--off); color: #757575; }
-    .no-shift {
-      color: #b71c1c;
-      font-weight: bold;
-      font-size: 1.1em;
-      margin-top: 10px;
-    }
-    .input-row {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      align-items: center;
-      margin: 12px 0;
-    }
-    .input-row input, .input-row button {
-      font-size: 1em;
-      padding: 7px 12px;
-      border-radius: 6px;
-      border: 1px solid #bdbdbd;
-      outline: none;
-    }
-    .input-row button {
-      background: var(--accent);
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .input-row button:hover {
-      background: #008c9e;
-    }
-    details {
-      margin-top: 28px;
-      background: #f5f5f5;
-      border-radius: 10px;
-      padding: 12px 18px;
-      box-shadow: 0 1px 4px #0001;
-    }
-    summary {
-      font-weight: bold;
-      color: #1976d2;
-      font-size: 1.1em;
-      cursor: pointer;
-      outline: none;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 14px;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px #0001;
-    }
-    th, td {
-      border: 1px solid #e0e0e0;
-      padding: 7px 10px;
-      text-align: center;
-      font-size: 1em;
-    }
-    th {
-      background: #e3f2fd;
-      color: #1976d2;
-    }
-    td.shift-s1 { background: #e3f2fd; color: #1976d2; }
-    td.shift-s2 { background: #fff3e0; color: #ef6c00; }
-    td.shift-s3 { background: #e8f5e9; color: #388e3c; }
-    td.shift-off { background: #f5f5f5; color: #aaa; }
-    @media (max-width: 700px) {
-      .container { padding: 12px 2vw 16px 2vw; }
-      h1 { font-size: 1.3em; }
-      .shift-card { padding: 12px 4vw; }
-      table, th, td { font-size: 0.95em; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Infosec - Shift Roster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .current-shift {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .current-shift h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .shift-info {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .on-shift {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .on-shift h3 {
+            margin-bottom: 10px;
+        }
+
+        .person {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .time-checker {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .time-checker h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .timetable-section {
+            margin-top: 30px;
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .timetable {
+            display: none;
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(135deg, #636e72, #2d3436);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .shift-s1 {
+            background: #74b9ff !important;
+            color: white;
+            font-weight: bold;
+        }
+
+        .shift-s2 {
+            background: #fd79a8 !important;
+            color: white;
+            font-weight: bold;
+        }
+
+        .shift-s3 {
+            background: #fdcb6e !important;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .shift-off {
+            background: #ddd !important;
+            color: #666;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Team Infosec</h1>
-    <h2>Who is On Shift?</h2>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Team Infosec</h1>
+            <p>Shift Roster Dashboard</p>
+        </div>
 
-    <div class="shift-card">
-      <b>Current Shift:</b>
-      <div id="currentShiftResult"></div>
+        <div class="content">
+            <div class="current-shift">
+                <h2>Current Status</h2>
+                <div class="shift-info" id="currentTime"></div>
+                <div class="shift-info" id="activeShift"></div>
+                <div class="on-shift" id="currentlyOnShift"></div>
+            </div>
+
+            <div class="time-checker">
+                <h3>🕐 Check Any Date & Time</h3>
+                <div class="input-group">
+                    <input type="date" id="checkDate" />
+                    <input type="time" id="checkTime" />
+                    <button class="btn" onclick="checkSpecificTime()">Check Shift</button>
+                </div>
+                <div id="specificResult"></div>
+            </div>
+
+            <div class="timetable-section">
+                <button class="toggle-btn" onclick="toggleTimetable()">📅 Show/Hide Full Timetable</button>
+                <div class="timetable" id="timetableContainer">
+                    <table id="timetableTable"></table>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color shift-s1"></div>
+                            <span>S1 (07:30-15:30)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-s2"></div>
+                            <span>S2 (13:30-22:00)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-s3"></div>
+                            <span>S3 (21:30-08:00)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color shift-off"></div>
+                            <span>OFF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="shift-card">
-      <b>Check Shift for Any Date and Time:</b>
-      <div class="input-row">
-        <input type="date" id="dateInput">
-        <input type="time" id="timeInput" step="60">
-        <button onclick="checkCustomShift()">Check</button>
-      </div>
-      <div id="customShiftResult"></div>
-    </div>
+    <script>
+        // Shift timetable data
+        const shiftData = {
+            '2025-06-01': { Ashwin: 'S2', Dominic: 'S3', Hari: 'S1', Ashrith: 'OFF', Manu: 'OFF' },
+            '2025-06-02': { Ashwin: 'OFF', Dominic: 'OFF', Hari: 'S1', Ashrith: 'OFF', Manu: 'OFF' },
+            '2025-06-03': { Ashwin: 'S1', Dominic: 'OFF', Hari: 'S2', Ashrith: 'S1', Manu: 'S3' },
+            '2025-06-04': { Ashwin: 'S2', Dominic: 'OFF', Hari: 'OFF', Ashrith: 'S1', Manu: 'S3' },
+            '2025-06-05': { Ashwin: 'OFF', Dominic: 'S3', Hari: 'S2', Ashrith: 'S1', Manu: 'S3' },
+            '2025-06-06': { Ashwin: 'S3', Dominic: 'OFF', Hari: 'S2', Ashrith: 'S1', Manu: 'OFF' },
+            '2025-06-07': { Ashwin: 'S3', Dominic: 'S3', Hari: 'OFF', Ashrith: 'S2', Manu: 'S2' },
+            '2025-06-08': { Ashwin: 'S3', Dominic: 'S3', Hari: 'S3', Ashrith: 'OFF', Manu: 'S2' },
+            '2025-06-09': { Ashwin: 'OFF', Dominic: 'S1', Hari: 'S2', Ashrith: 'S3', Manu: 'S3' },
+            '2025-06-10': { Ashwin: 'S2', Dominic: 'OFF', Hari: 'S3', Ashrith: 'S1', Manu: 'OFF' },
+            '2025-06-11': { Ashwin: 'OFF', Dominic: 'S2', Hari: 'S3', Ashrith: 'OFF', Manu: 'S1' },
+            '2025-06-12': { Ashwin: 'OFF', Dominic: 'S3', Hari: 'OFF', Ashrith: 'S2', Manu: 'S1' },
+            '2025-06-13': { Ashwin: 'OFF', Dominic: 'S3', Hari: 'OFF', Ashrith: 'S2', Manu: 'S1' },
+            '2025-06-14': { Ashwin: 'S2', Dominic: 'S1', Hari: 'S3', Ashrith: 'OFF', Manu: 'S2' },
+            '2025-06-15': { Ashwin: 'S1', Dominic: 'OFF', Hari: 'S3', Ashrith: 'S1', Manu: 'OFF' },
+            '2025-06-16': { Ashwin: 'S1', Dominic: 'OFF', Hari: 'S3', Ashrith: 'OFF', Manu: 'S1' },
+            '2025-06-17': { Ashwin: 'S1', Dominic: 'S2', Hari: 'S3', Ashrith: 'OFF', Manu: 'S1' },
+            '2025-06-18': { Ashwin: 'OFF', Dominic: 'S1', Hari: 'S2', Ashrith: 'S3', Manu: 'OFF' },
+            '2025-06-19': { Ashwin: 'OFF', Dominic: 'S1', Hari: 'S2', Ashrith: 'S3', Manu: 'OFF' },
+            '2025-06-20': { Ashwin: 'OFF', Dominic: 'S1', Hari: 'S2', Ashrith: 'S3', Manu: 'OFF' },
+            '2025-06-21': { Ashwin: 'OFF', Dominic: 'S1', Hari: 'S2', Ashrith: 'S3', Manu: 'OFF' },
+            '2025-06-22': { Ashwin: 'S2', Dominic: 'S1', Hari: 'OFF', Ashrith: 'OFF', Manu: 'S3' },
+            '2025-06-23': { Ashwin: 'OFF', Dominic: 'S2', Hari: 'S1', Ashrith: 'OFF', Manu: 'S3' },
+            '2025-06-24': { Ashwin: 'S3', Dominic: 'S3', Hari: 'OFF', Ashrith: 'S1', Manu: 'OFF' },
+            '2025-06-25': { Ashwin: 'OFF', Dominic: 'OFF', Hari: 'S1', Ashrith: 'S3', Manu: 'S2' },
+            '2025-06-26': { Ashwin: 'OFF', Dominic: 'OFF', Hari: 'S2', Ashrith: 'S1', Manu: 'S3' },
+            '2025-06-27': { Ashwin: 'OFF', Dominic: 'S2', Hari: 'S3', Ashrith: 'S1', Manu: 'OFF' },
+            '2025-06-28': { Ashwin: 'S2', Dominic: 'S1', Hari: 'S3', Ashrith: 'OFF', Manu: 'S2' },
+            '2025-06-29': { Ashwin: 'S1', Dominic: 'OFF', Hari: 'S3', Ashrith: 'S1', Manu: 'OFF' },
+            '2025-06-30': { Ashwin: 'S2', Dominic: 'S3', Hari: 'S1', Ashrith: 'OFF', Manu: 'OFF' }
+        };
 
-    <details>
-      <summary>Show Full Shift Timetable</summary>
-      <div id="timetable"></div>
-    </details>
-  </div>
+        const teamMembers = ['Ashwin', 'Dominic', 'Hari', 'Ashrith', 'Manu'];
 
-  <script>
-    // Shift time definitions (24h format)
-    const shifts = {
-      S1: { start: "07:30", end: "15:30" },
-      S2: { start: "13:30", end: "22:00" },
-      S3: { start: "21:30", end: "08:00" } // overnight
-    };
+        // Shift times
+        const shiftTimes = {
+            'S1': { start: '07:30', end: '15:30' },
+            'S2': { start: '13:30', end: '22:00' },
+            'S3': { start: '21:30', end: '08:00' } // overnight
+        };
 
-    // Team members
-    const team = ["Ashwin", "Dominic", "Hari", "Ashrith", "Manu"];
-
-    // Shift table: update as needed
-    // Each date: { Name: "S1"/"S2"/"S3"/"OFF" }
-    const shiftTable = {
-      "2025-06-01": { Ashwin: "S2", Dominic: "S3", Hari: "OFF", Ashrith: "OFF", Manu: "OFF" },
-      "2025-06-02": { Ashwin: "OFF", Dominic: "OFF", Hari: "S1", Ashrith: "OFF", Manu: "OFF" },
-      // Add more dates as needed
-    };
-
-    // Helper: pad number
-    function pad(n) { return n < 10 ? '0' + n : n; }
-
-    // Returns array of {name, shift} for all people on shift at given date/time
-    function getMembersOnShift(dateObj) {
-      const y = dateObj.getFullYear();
-      const m = pad(dateObj.getMonth() + 1);
-      const d = pad(dateObj.getDate());
-      const dateStr = `${y}-${m}-${d}`;
-      const mins = dateObj.getHours() * 60 + dateObj.getMinutes();
-
-      let members = [];
-
-      // --- S1 and S2: check today's assignment ---
-      const today = shiftTable[dateStr];
-      if (today) {
-        // S1
-        let s1Start = 7 * 60 + 30, s1End = 15 * 60 + 30;
-        if (mins >= s1Start && mins < s1End) {
-          for (const member of team) {
-            if (today[member] === "S1") members.push({ name: member, shift: "S1" });
-          }
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
         }
-        // S2
-        let s2Start = 13 * 60 + 30, s2End = 22 * 60;
-        if (mins >= s2Start && mins < s2End) {
-          for (const member of team) {
-            if (today[member] === "S2") members.push({ name: member, shift: "S2" });
-          }
-        }
-      }
 
-      // --- S3: check both today's and previous day's S3 assignment ---
-      // S3 runs 21:30–08:00 (overnight)
-      // If time is between 00:00–08:00, S3 is from previous day
-      // If time is between 21:30–23:59, S3 is today
-      let s3Start = 21 * 60 + 30, s3End = 8 * 60; // 1290, 480
-      if (mins < s3End) {
-        // After midnight, before 08:00: get previous day's S3
-        let prev = new Date(dateObj.getTime() - 24 * 60 * 60 * 1000);
-        const py = prev.getFullYear(), pm = pad(prev.getMonth() + 1), pd = pad(prev.getDate());
-        const prevDateStr = `${py}-${pm}-${pd}`;
-        const prevDay = shiftTable[prevDateStr];
-        if (prevDay) {
-          for (const member of team) {
-            if (prevDay[member] === "S3" && !members.find(m => m.name === member)) {
-              members.push({ name: member, shift: "S3" });
+        function formatTime(date) {
+            return date.toTimeString().slice(0, 5);
+        }
+
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function isTimeInShift(currentTime, shift) {
+            const currentMinutes = timeToMinutes(currentTime);
+            const startMinutes = timeToMinutes(shiftTimes[shift].start);
+            const endMinutes = timeToMinutes(shiftTimes[shift].end);
+
+            if (shift === 'S3') {
+                // Overnight shift: 21:30 to 08:00 next day
+                return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+            } else {
+                return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
             }
-          }
         }
-      } else if (mins >= s3Start) {
-        // After 21:30: get today's S3
-        if (today) {
-          for (const member of team) {
-            if (today[member] === "S3" && !members.find(m => m.name === member)) {
-              members.push({ name: member, shift: "S3" });
+
+        function getActiveShifts(date, time) {
+            const dateStr = formatDate(date);
+            const timeStr = formatTime(time);
+            const activeShifts = [];
+
+            // Check current day shifts
+            if (shiftData[dateStr]) {
+                for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                    if (shift !== 'OFF' && isTimeInShift(timeStr, shift)) {
+                        activeShifts.push({ person, shift, day: dateStr });
+                    }
+                }
             }
-          }
+
+            // Check previous day S3 shifts (overnight)
+            const prevDate = new Date(date);
+            prevDate.setDate(prevDate.getDate() - 1);
+            const prevDateStr = formatDate(prevDate);
+
+            if (shiftData[prevDateStr]) {
+                for (const [person, shift] of Object.entries(shiftData[prevDateStr])) {
+                    if (shift === 'S3') {
+                        const currentMinutes = timeToMinutes(timeStr);
+                        if (currentMinutes <= timeToMinutes('08:00')) {
+                            activeShifts.push({ person, shift, day: prevDateStr });
+                        }
+                    }
+                }
+            }
+
+            return activeShifts;
         }
-      }
 
-      return members;
-    }
+        function updateCurrentShift() {
+            const now = new Date();
+            const currentTimeElement = document.getElementById('currentTime');
+            const activeShiftElement = document.getElementById('activeShift');
+            const currentlyOnShiftElement = document.getElementById('currentlyOnShift');
 
-    // Display who is on shift now
-    function showCurrentShift() {
-      const now = new Date();
-      const members = getMembersOnShift(now);
-      const resDiv = document.getElementById("currentShiftResult");
-      if (members.length === 0) {
-        resDiv.innerHTML = "<div class='no-shift'>No one is on shift right now.</div>";
-      } else {
-        resDiv.innerHTML =
-          `<ul class="shift-list">${members.map(m =>
-            `<li><span class="shift-badge shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</span></li>`
-          ).join("")}</ul>`;
-      }
-    }
+            currentTimeElement.textContent = `Current Time: ${now.toLocaleString()}`;
 
-    // For custom date/time input
-    function checkCustomShift() {
-      const dateVal = document.getElementById("dateInput").value;
-      const timeVal = document.getElementById("timeInput").value;
-      if (!dateVal || !timeVal) {
-        document.getElementById("customShiftResult").innerHTML =
-          "<div class='no-shift'>Please select both date and time.</div>";
-        return;
-      }
-      const dateObj = new Date(dateVal + "T" + timeVal + ":00");
-      const members = getMembersOnShift(dateObj);
-      if (members.length === 0) {
-        document.getElementById("customShiftResult").innerHTML =
-          "<div class='no-shift'>No one is on shift at this time.</div>";
-      } else {
-        document.getElementById("customShiftResult").innerHTML =
-          `<ul class="shift-list">${members.map(m =>
-            `<li><span class="shift-badge shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</span></li>`
-          ).join("")}</ul>`;
-      }
-    }
+            const activeShifts = getActiveShifts(now, now);
 
-    // Render timetable as table
-    function renderTimetable() {
-      let html = '<table><tr><th>Date</th>';
-      for (const m of team) html += `<th>${m}</th>`;
-      html += '</tr>';
-      for (const [date, shiftsObj] of Object.entries(shiftTable)) {
-        html += `<tr><td>${date}</td>`;
-        for (const m of team) {
-          const shift = shiftsObj[m] || "OFF";
-          html += `<td class="shift-${shift.toLowerCase()}">${shift}</td>`;
+            if (activeShifts.length > 0) {
+                const shiftTypes = [...new Set(activeShifts.map(s => s.shift))];
+                activeShiftElement.textContent = `Active Shift(s): ${shiftTypes.join(', ')}`;
+
+                const peopleOnShift = activeShifts.map(s => s.person);
+                currentlyOnShiftElement.innerHTML = `
+                    <h3>👥 Currently On Shift:</h3>
+                    ${peopleOnShift.map(person => `<span class="person">${person}</span>`).join('')}
+                `;
+            } else {
+                activeShiftElement.textContent = 'No active shifts right now';
+                currentlyOnShiftElement.innerHTML = '<h3>🏠 No one is currently on shift</h3>';
+            }
         }
-        html += '</tr>';
-      }
-      html += '</table>';
-      document.getElementById("timetable").innerHTML = html;
-    }
 
-    // On page load
-    showCurrentShift();
-    renderTimetable();
+        function checkSpecificTime() {
+            const dateInput = document.getElementById('checkDate').value;
+            const timeInput = document.getElementById('checkTime').value;
+            const resultElement = document.getElementById('specificResult');
 
-    // Optional: auto-refresh current shift every minute
-    setInterval(showCurrentShift, 60000);
-  </script>
+            if (!dateInput || !timeInput) {
+                resultElement.innerHTML = '<p style="color: #ff6b6b;">Please select both date and time.</p>';
+                return;
+            }
+
+            const checkDate = new Date(dateInput + 'T' + timeInput);
+            const activeShifts = getActiveShifts(checkDate, checkDate);
+
+            if (activeShifts.length > 0) {
+                const peopleOnShift = activeShifts.map(s => s.person);
+                const shiftTypes = [...new Set(activeShifts.map(s => s.shift))];
+                
+                resultElement.innerHTML = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                        <h4>📅 ${checkDate.toLocaleDateString()} at ${timeInput}</h4>
+                        <p><strong>Active Shift(s):</strong> ${shiftTypes.join(', ')}</p>
+                        <p><strong>On Shift:</strong> ${peopleOnShift.map(person => `<span class="person">${person}</span>`).join('')}</p>
+                    </div>
+                `;
+            } else {
+                resultElement.innerHTML = `
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-top: 15px;">
+                        <h4>📅 ${checkDate.toLocaleDateString()} at ${timeInput}</h4>
+                        <p>🏠 No one is on shift at this time.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function generateTimetable() {
+            const table = document.getElementById('timetableTable');
+            const dates = Object.keys(shiftData).sort();
+
+            let html = `
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        ${teamMembers.map(member => `<th>${member}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            dates.forEach(date => {
+                const dateObj = new Date(date);
+                const formattedDate = dateObj.toLocaleDateString();
+                
+                html += `<tr>
+                    <td><strong>${formattedDate}</strong></td>
+                    ${teamMembers.map(member => {
+                        const shift = shiftData[date][member];
+                        const className = shift === 'OFF' ? 'shift-off' : `shift-${shift.toLowerCase()}`;
+                        return `<td class="${className}">${shift}</td>`;
+                    }).join('')}
+                </tr>`;
+            });
+
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function toggleTimetable() {
+            const timetable = document.getElementById('timetableContainer');
+            if (timetable.style.display === 'none' || timetable.style.display === '') {
+                timetable.style.display = 'block';
+                generateTimetable();
+            } else {
+                timetable.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentShift();
+            setInterval(updateCurrentShift, 60000); // Update every minute
+
+            // Set default date and time to now
+            const now = new Date();
+            document.getElementById('checkDate').value = formatDate(now);
+            document.getElementById('checkTime').value = formatTime(now);
+        });
+    </script>
 </body>
 </html>
