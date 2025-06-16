@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Infosec - Shift Roster</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -35,13 +31,8 @@
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        .content {
-            padding: 30px;
-        }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .content { padding: 30px; }
         .current-shift {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: white;
@@ -50,23 +41,15 @@
             margin-bottom: 30px;
             text-align: center;
         }
-        .current-shift h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-        }
-        .shift-info {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-        }
+        .current-shift h2 { font-size: 1.8em; margin-bottom: 15px; }
+        .shift-info { font-size: 1.3em; margin-bottom: 10px; }
         .on-shift {
             background: rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 10px;
             margin-top: 15px;
         }
-        .on-shift h3 {
-            margin-bottom: 10px;
-        }
+        .on-shift h3 { margin-bottom: 10px; }
         .person {
             display: inline-block;
             background: rgba(255, 255, 255, 0.9);
@@ -83,10 +66,7 @@
             border-radius: 15px;
             margin-bottom: 30px;
         }
-        .time-checker h3 {
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
+        .time-checker h3 { margin-bottom: 15px; font-size: 1.5em; }
         .input-group {
             display: flex;
             gap: 15px;
@@ -112,12 +92,8 @@
             font-weight: bold;
             transition: transform 0.2s;
         }
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        .timetable-section {
-            margin-top: 30px;
-        }
+        .btn:hover { transform: translateY(-2px); }
+        .timetable-section { margin-top: 30px; }
         .toggle-btn {
             background: linear-gradient(135deg, #a29bfe, #6c5ce7);
             color: white;
@@ -130,9 +106,7 @@
             margin-bottom: 20px;
             transition: transform 0.2s;
         }
-        .toggle-btn:hover {
-            transform: translateY(-2px);
-        }
+        .toggle-btn:hover { transform: translateY(-2px); }
         .timetable {
             display: none;
             overflow-x: auto;
@@ -154,9 +128,7 @@
             color: white;
             font-weight: bold;
         }
-        tr:nth-child(even) {
-            background: #f8f9fa;
-        }
+        tr:nth-child(even) { background: #f8f9fa; }
         .shift-s1 {
             background: #74b9ff !important;
             color: white;
@@ -194,16 +166,9 @@
             border-radius: 4px;
         }
         @media (max-width: 768px) {
-            .input-group {
-                flex-direction: column;
-            }
-            .header h1 {
-                font-size: 2em;
-            }
-            .legend {
-                flex-direction: column;
-                align-items: center;
-            }
+            .input-group { flex-direction: column; }
+            .header h1 { font-size: 2em; }
+            .legend { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
@@ -312,19 +277,18 @@
             return hours * 60 + minutes;
         }
 
-        // Updated overlap logic
+        // Corrected overlap logic for S3
         function isTimeInShift(currentTime, shift, isPrevDay = false) {
             const currentMinutes = timeToMinutes(currentTime);
             const startMinutes = timeToMinutes(shiftTimes[shift].start);
             const endMinutes = timeToMinutes(shiftTimes[shift].end);
 
             if (shift === 'S3') {
-                // S3: 21:30 to 08:00 next day
                 if (isPrevDay) {
-                    // For previous day's S3, only count if time is between 00:00 and 08:00
+                    // Previous day's S3: active from 00:00 to 08:00
                     return currentMinutes < endMinutes;
                 } else {
-                    // For current day's S3, only count if time is after 21:30
+                    // Current day's S3: active from 21:30 to 23:59
                     return currentMinutes >= startMinutes;
                 }
             } else {
@@ -338,17 +302,8 @@
             const activeShifts = [];
             const currentMinutes = timeToMinutes(timeStr);
 
-            // Always check current day's S1, S2, S3
-            if (shiftData[dateStr]) {
-                for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                    if (shift !== 'OFF' && isTimeInShift(timeStr, shift, false)) {
-                        activeShifts.push({ person, shift, day: dateStr });
-                    }
-                }
-            }
-
-            // For times between 00:00 and 08:00, also check previous day's S3
             if (currentMinutes < timeToMinutes('08:00')) {
+                // 00:00 - 07:59: Only previous day's S3, and current day's S1/S2
                 const prevDate = new Date(date);
                 prevDate.setDate(prevDate.getDate() - 1);
                 const prevDateStr = formatDate(prevDate);
@@ -356,15 +311,39 @@
                 if (shiftData[prevDateStr]) {
                     for (const [person, shift] of Object.entries(shiftData[prevDateStr])) {
                         if (shift === 'S3' && isTimeInShift(timeStr, shift, true)) {
-                            // Avoid duplicates if already present from current day's S3
-                            if (!activeShifts.some(s => s.person === person && s.shift === 'S3')) {
-                                activeShifts.push({ person, shift, day: prevDateStr });
-                            }
+                            activeShifts.push({ person, shift, day: prevDateStr });
+                        }
+                    }
+                }
+                if (shiftData[dateStr]) {
+                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                        if (shift !== 'OFF' && shift !== 'S3' && isTimeInShift(timeStr, shift, false)) {
+                            activeShifts.push({ person, shift, day: dateStr });
+                        }
+                    }
+                }
+            } else if (currentMinutes >= timeToMinutes('21:30')) {
+                // 21:30 - 23:59: Only current day's S3 and S2 (if overlap)
+                if (shiftData[dateStr]) {
+                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                        if (shift !== 'OFF' && (
+                            (shift === 'S3' && isTimeInShift(timeStr, shift, false)) ||
+                            (shift !== 'S3' && isTimeInShift(timeStr, shift, false))
+                        )) {
+                            activeShifts.push({ person, shift, day: dateStr });
+                        }
+                    }
+                }
+            } else {
+                // 08:00 - 21:29: Only current day's S1 and S2
+                if (shiftData[dateStr]) {
+                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                        if (shift !== 'OFF' && shift !== 'S3' && isTimeInShift(timeStr, shift, false)) {
+                            activeShifts.push({ person, shift, day: dateStr });
                         }
                     }
                 }
             }
-
             return activeShifts;
         }
 
