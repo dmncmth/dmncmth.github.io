@@ -10,14 +10,12 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -26,29 +24,24 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
-
         .header {
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
             color: white;
             padding: 30px;
             text-align: center;
         }
-
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-
         .header p {
             font-size: 1.2em;
             opacity: 0.9;
         }
-
         .content {
             padding: 30px;
         }
-
         .current-shift {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: white;
@@ -57,28 +50,23 @@
             margin-bottom: 30px;
             text-align: center;
         }
-
         .current-shift h2 {
             font-size: 1.8em;
             margin-bottom: 15px;
         }
-
         .shift-info {
             font-size: 1.3em;
             margin-bottom: 10px;
         }
-
         .on-shift {
             background: rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 10px;
             margin-top: 15px;
         }
-
         .on-shift h3 {
             margin-bottom: 10px;
         }
-
         .person {
             display: inline-block;
             background: rgba(255, 255, 255, 0.9);
@@ -88,7 +76,6 @@
             border-radius: 25px;
             font-weight: bold;
         }
-
         .time-checker {
             background: linear-gradient(135deg, #fd79a8, #e84393);
             color: white;
@@ -96,19 +83,16 @@
             border-radius: 15px;
             margin-bottom: 30px;
         }
-
         .time-checker h3 {
             margin-bottom: 15px;
             font-size: 1.5em;
         }
-
         .input-group {
             display: flex;
             gap: 15px;
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-
         .input-group input {
             padding: 10px;
             border: none;
@@ -117,7 +101,6 @@
             flex: 1;
             min-width: 150px;
         }
-
         .btn {
             background: linear-gradient(135deg, #00b894, #00a085);
             color: white;
@@ -129,15 +112,12 @@
             font-weight: bold;
             transition: transform 0.2s;
         }
-
         .btn:hover {
             transform: translateY(-2px);
         }
-
         .timetable-section {
             margin-top: 30px;
         }
-
         .toggle-btn {
             background: linear-gradient(135deg, #a29bfe, #6c5ce7);
             color: white;
@@ -150,63 +130,52 @@
             margin-bottom: 20px;
             transition: transform 0.2s;
         }
-
         .toggle-btn:hover {
             transform: translateY(-2px);
         }
-
         .timetable {
             display: none;
             overflow-x: auto;
             border-radius: 10px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
         }
-
         th, td {
             padding: 12px;
             text-align: center;
             border: 1px solid #ddd;
         }
-
         th {
             background: linear-gradient(135deg, #636e72, #2d3436);
             color: white;
             font-weight: bold;
         }
-
         tr:nth-child(even) {
             background: #f8f9fa;
         }
-
         .shift-s1 {
             background: #74b9ff !important;
             color: white;
             font-weight: bold;
         }
-
         .shift-s2 {
             background: #fd79a8 !important;
             color: white;
             font-weight: bold;
         }
-
         .shift-s3 {
             background: #fdcb6e !important;
             color: #333;
             font-weight: bold;
         }
-
         .shift-off {
             background: #ddd !important;
             color: #666;
         }
-
         .legend {
             display: flex;
             justify-content: center;
@@ -214,28 +183,23 @@
             margin-top: 15px;
             flex-wrap: wrap;
         }
-
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
         .legend-color {
             width: 20px;
             height: 20px;
             border-radius: 4px;
         }
-
         @media (max-width: 768px) {
             .input-group {
                 flex-direction: column;
             }
-            
             .header h1 {
                 font-size: 2em;
             }
-            
             .legend {
                 flex-direction: column;
                 align-items: center;
@@ -249,7 +213,6 @@
             <h1>🛡️ Team Infosec</h1>
             <p>Shift Roster Dashboard</p>
         </div>
-
         <div class="content">
             <div class="current-shift">
                 <h2>Current Status</h2>
@@ -257,7 +220,6 @@
                 <div class="shift-info" id="activeShift"></div>
                 <div class="on-shift" id="currentlyOnShift"></div>
             </div>
-
             <div class="time-checker">
                 <h3>🕐 Check Any Date & Time</h3>
                 <div class="input-group">
@@ -267,7 +229,6 @@
                 </div>
                 <div id="specificResult"></div>
             </div>
-
             <div class="timetable-section">
                 <button class="toggle-btn" onclick="toggleTimetable()">📅 Show/Hide Full Timetable</button>
                 <div class="timetable" id="timetableContainer">
@@ -294,7 +255,6 @@
             </div>
         </div>
     </div>
-
     <script>
         // Shift timetable data
         const shiftData = {
@@ -352,16 +312,23 @@
             return hours * 60 + minutes;
         }
 
-        function isTimeInShift(currentTime, shift) {
+        // Updated overlap logic
+        function isTimeInShift(currentTime, shift, isPrevDay = false) {
             const currentMinutes = timeToMinutes(currentTime);
             const startMinutes = timeToMinutes(shiftTimes[shift].start);
             const endMinutes = timeToMinutes(shiftTimes[shift].end);
 
             if (shift === 'S3') {
-                // Overnight shift: 21:30 to 08:00 next day
-                return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+                // S3: 21:30 to 08:00 next day
+                if (isPrevDay) {
+                    // For previous day's S3, only count if time is between 00:00 and 08:00
+                    return currentMinutes < endMinutes;
+                } else {
+                    // For current day's S3, only count if time is after 21:30
+                    return currentMinutes >= startMinutes;
+                }
             } else {
-                return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+                return currentMinutes >= startMinutes && currentMinutes < endMinutes;
             }
         }
 
@@ -370,41 +337,34 @@
             const timeStr = formatTime(time);
             const activeShifts = [];
             const currentMinutes = timeToMinutes(timeStr);
-        
-            // For times between 00:00 and 08:00, only previous day's S3 is active
-            if (currentMinutes <= timeToMinutes('08:00')) {
-                // Check previous day S3 shifts (overnight)
+
+            // Always check current day's S1, S2, S3
+            if (shiftData[dateStr]) {
+                for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                    if (shift !== 'OFF' && isTimeInShift(timeStr, shift, false)) {
+                        activeShifts.push({ person, shift, day: dateStr });
+                    }
+                }
+            }
+
+            // For times between 00:00 and 08:00, also check previous day's S3
+            if (currentMinutes < timeToMinutes('08:00')) {
                 const prevDate = new Date(date);
                 prevDate.setDate(prevDate.getDate() - 1);
                 const prevDateStr = formatDate(prevDate);
-        
+
                 if (shiftData[prevDateStr]) {
                     for (const [person, shift] of Object.entries(shiftData[prevDateStr])) {
-                        if (shift === 'S3') {
-                            activeShifts.push({ person, shift, day: prevDateStr });
-                        }
-                    }
-                }
-        
-                // For S1 and S2, still check current day
-                if (shiftData[dateStr]) {
-                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                        if (shift !== 'OFF' && shift !== 'S3' && isTimeInShift(timeStr, shift)) {
-                            activeShifts.push({ person, shift, day: dateStr });
-                        }
-                    }
-                }
-            } else {
-                // For times after 08:00, check current day shifts as usual
-                if (shiftData[dateStr]) {
-                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                        if (shift !== 'OFF' && isTimeInShift(timeStr, shift)) {
-                            activeShifts.push({ person, shift, day: dateStr });
+                        if (shift === 'S3' && isTimeInShift(timeStr, shift, true)) {
+                            // Avoid duplicates if already present from current day's S3
+                            if (!activeShifts.some(s => s.person === person && s.shift === 'S3')) {
+                                activeShifts.push({ person, shift, day: prevDateStr });
+                            }
                         }
                     }
                 }
             }
-        
+
             return activeShifts;
         }
 
