@@ -2,186 +2,265 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shift Roster - Who is On Shift Now?</title>
+  <title>Team Infosec - Who is On Shift?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    :root {
+      --s1: #4fc3f7;
+      --s2: #ffb74d;
+      --s3: #81c784;
+      --off: #e0e0e0;
+      --bg: linear-gradient(120deg, #1e3c72 0%, #2a5298 100%);
+      --card: #fff;
+      --accent: #00bcd4;
+      --shadow: 0 4px 16px #0002;
+    }
     body {
-      font-family: Arial, sans-serif;
-      margin: 24px;
-      background: #f9f9f9;
-      color: #222;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      min-height: 100vh;
+      color: #1a237e;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 32px 24px 24px 24px;
     }
     h1 {
-      font-size: 1.6em;
-      margin-bottom: 0.5em;
+      text-align: center;
+      font-size: 2.1em;
+      letter-spacing: 2px;
+      margin-bottom: 0.2em;
+      color: var(--accent);
+      text-shadow: 0 2px 8px #0001;
     }
-    #currentShift, #customShift {
-      background: #fff;
-      padding: 16px;
-      margin-bottom: 20px;
-      border-radius: 8px;
+    h2 {
+      text-align: center;
+      font-weight: 400;
+      color: #3949ab;
+      margin-top: 0;
+    }
+    .shift-card {
+      background: linear-gradient(90deg, #e3f2fd 60%, #fce4ec 100%);
+      border-radius: 12px;
+      padding: 20px 18px;
+      margin-bottom: 22px;
       box-shadow: 0 2px 8px #0001;
+      text-align: center;
     }
     .shift-list {
-      font-size: 1.1em;
-      margin: 0.5em 0 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin: 16px 0 0 0;
       padding: 0;
       list-style: none;
     }
-    .shift-list li {
-      margin: 0.2em 0;
+    .shift-badge {
+      display: inline-block;
+      font-size: 1.1em;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 30px;
+      color: #fff;
+      box-shadow: 0 2px 8px #0001;
+      margin: 2px 0;
+      letter-spacing: 1px;
+      min-width: 110px;
+      text-align: center;
+      transition: transform 0.2s;
     }
-    .off {
-      color: #aaa;
-      font-style: italic;
+    .shift-s1 { background: var(--s1); }
+    .shift-s2 { background: var(--s2); }
+    .shift-s3 { background: var(--s3); }
+    .shift-off { background: var(--off); color: #757575; }
+    .no-shift {
+      color: #b71c1c;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-top: 10px;
+    }
+    .input-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .input-row input, .input-row button {
+      font-size: 1em;
+      padding: 7px 12px;
+      border-radius: 6px;
+      border: 1px solid #bdbdbd;
+      outline: none;
+    }
+    .input-row button {
+      background: var(--accent);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .input-row button:hover {
+      background: #008c9e;
+    }
+    details {
+      margin-top: 28px;
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 12px 18px;
+      box-shadow: 0 1px 4px #0001;
+    }
+    summary {
+      font-weight: bold;
+      color: #1976d2;
+      font-size: 1.1em;
+      cursor: pointer;
+      outline: none;
     }
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 16px;
+      margin-top: 14px;
       background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #0001;
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 6px 10px;
+      border: 1px solid #e0e0e0;
+      padding: 7px 10px;
       text-align: center;
+      font-size: 1em;
     }
     th {
-      background: #f2f2f2;
+      background: #e3f2fd;
+      color: #1976d2;
     }
-    .shift-s1 { color: #1976d2; }
-    .shift-s2 { color: #c62828; }
-    .shift-s3 { color: #388e3c; }
-    .off-cell { color: #aaa; background: #f5f5f5; }
-    @media (max-width: 600px) {
-      table, th, td {
-        font-size: 0.82em;
-      }
+    td.shift-s1 { background: #e3f2fd; color: #1976d2; }
+    td.shift-s2 { background: #fff3e0; color: #ef6c00; }
+    td.shift-s3 { background: #e8f5e9; color: #388e3c; }
+    td.shift-off { background: #f5f5f5; color: #aaa; }
+    @media (max-width: 700px) {
+      .container { padding: 12px 2vw 16px 2vw; }
+      h1 { font-size: 1.3em; }
+      .shift-card { padding: 12px 4vw; }
+      table, th, td { font-size: 0.95em; }
     }
   </style>
 </head>
 <body>
-  <h1>Who is On Shift?</h1>
-  <div id="currentShift">
-    <b>Current Shift:</b>
-    <div id="currentShiftResult"></div>
+  <div class="container">
+    <h1>Team Infosec</h1>
+    <h2>Who is On Shift?</h2>
+
+    <div class="shift-card">
+      <b>Current Shift:</b>
+      <div id="currentShiftResult"></div>
+    </div>
+
+    <div class="shift-card">
+      <b>Check Shift for Any Date and Time:</b>
+      <div class="input-row">
+        <input type="date" id="dateInput">
+        <input type="time" id="timeInput" step="60">
+        <button onclick="checkCustomShift()">Check</button>
+      </div>
+      <div id="customShiftResult"></div>
+    </div>
+
+    <details>
+      <summary>Show Full Shift Timetable</summary>
+      <div id="timetable"></div>
+    </details>
   </div>
-  <div id="customShift">
-    <b>Check Shift for Any Date and Time:</b><br>
-    <input type="date" id="dateInput">
-    <input type="time" id="timeInput" step="60">
-    <button onclick="checkCustomShift()">Check</button>
-    <div id="customShiftResult" style="margin-top:8px;"></div>
-  </div>
-  <details>
-    <summary style="font-weight:bold;cursor:pointer;">Show Full Shift Timetable</summary>
-    <div id="timetable"></div>
-  </details>
+
   <script>
     // Shift time definitions (24h format)
     const shifts = {
       S1: { start: "07:30", end: "15:30" },
       S2: { start: "13:30", end: "22:00" },
-      S3: { start: "21:30", end: "08:00" } // Overnight
+      S3: { start: "21:30", end: "08:00" } // overnight
     };
 
     // Team members
     const team = ["Ashwin", "Dominic", "Hari", "Ashrith", "Manu"];
 
-    // Shift table for June 2025 (extracted from your image and your correction for June 1)
-    // Format: "YYYY-MM-DD": { Name: "S1"/"S2"/"S3"/"OFF" }
+    // Shift table: update as needed
+    // Each date: { Name: "S1"/"S2"/"S3"/"OFF" }
     const shiftTable = {
-      "2025-06-01": { Ashwin: "S2", Dominic: "S3", Hari: "S1", Ashrith: "OFF", Manu: "OFF" },
-      "2025-06-02": { Ashwin: "S2", Dominic: "S3", Hari: "S1", Ashrith: "OFF", Manu: "OFF" },
-      "2025-06-03": { Ashwin: "S1", Dominic: "OFF", Hari: "S2", Ashrith: "S1", Manu: "S3" },
-      "2025-06-04": { Ashwin: "S2", Dominic: "OFF", Hari: "OFF", Ashrith: "S1", Manu: "S3" },
-      "2025-06-05": { Ashwin: "OFF", Dominic: "S3", Hari: "S2", Ashrith: "S1", Manu: "S3" },
-      "2025-06-06": { Ashwin: "S3", Dominic: "OFF", Hari: "S2", Ashrith: "S1", Manu: "OFF" },
-      "2025-06-07": { Ashwin: "S3", Dominic: "S3", Hari: "OFF", Ashrith: "S2", Manu: "S2" },
-      "2025-06-08": { Ashwin: "S3", Dominic: "S3", Hari: "S3", Ashrith: "OFF", Manu: "S2" },
-      "2025-06-09": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "S3" },
-      "2025-06-10": { Ashwin: "S2", Dominic: "OFF", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
-      "2025-06-11": { Ashwin: "OFF", Dominic: "S2", Hari: "S3", Ashrith: "OFF", Manu: "S1" },
-      "2025-06-12": { Ashwin: "OFF", Dominic: "S3", Hari: "OFF", Ashrith: "S2", Manu: "S1" },
-      "2025-06-13": { Ashwin: "OFF", Dominic: "S3", Hari: "OFF", Ashrith: "S2", Manu: "S1" },
-      "2025-06-14": { Ashwin: "S2", Dominic: "S1", Hari: "S3", Ashrith: "OFF", Manu: "S2" },
-      "2025-06-15": { Ashwin: "S1", Dominic: "OFF", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
-      "2025-06-16": { Ashwin: "S1", Dominic: "OFF", Hari: "S3", Ashrith: "OFF", Manu: "S1" },
-      "2025-06-17": { Ashwin: "S1", Dominic: "S2", Hari: "S3", Ashrith: "OFF", Manu: "S1" },
-      "2025-06-18": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
-      "2025-06-19": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
-      "2025-06-20": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
-      "2025-06-21": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
-      "2025-06-22": { Ashwin: "S2", Dominic: "S1", Hari: "OFF", Ashrith: "OFF", Manu: "S3" },
-      "2025-06-23": { Ashwin: "OFF", Dominic: "S2", Hari: "S1", Ashrith: "OFF", Manu: "S3" },
-      "2025-06-24": { Ashwin: "S3", Dominic: "S3", Hari: "OFF", Ashrith: "S1", Manu: "OFF" },
-      "2025-06-25": { Ashwin: "OFF", Dominic: "OFF", Hari: "S1", Ashrith: "S3", Manu: "S2" },
-      "2025-06-26": { Ashwin: "OFF", Dominic: "OFF", Hari: "S2", Ashrith: "S1", Manu: "S3" },
-      "2025-06-27": { Ashwin: "OFF", Dominic: "S2", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
-      "2025-06-28": { Ashwin: "S2", Dominic: "S1", Hari: "S3", Ashrith: "OFF", Manu: "S2" },
-      "2025-06-29": { Ashwin: "S1", Dominic: "OFF", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
-      "2025-06-30": { Ashwin: "S2", Dominic: "S3", Hari: "S1", Ashrith: "OFF", Manu: "OFF" }
+      "2025-06-01": { Ashwin: "S2", Dominic: "S3", Hari: "OFF", Ashrith: "OFF", Manu: "OFF" },
+      "2025-06-02": { Ashwin: "OFF", Dominic: "OFF", Hari: "S1", Ashrith: "OFF", Manu: "OFF" },
+      // Add more dates as needed
     };
 
-    // Utility: pad number
+    // Helper: pad number
     function pad(n) { return n < 10 ? '0' + n : n; }
 
-    // Get shift for a given date and time
-    function getActiveShifts(dateObj) {
-      // Find date string for lookup
+    // Returns array of {name, shift} for all people on shift at given date/time
+    function getMembersOnShift(dateObj) {
       const y = dateObj.getFullYear();
       const m = pad(dateObj.getMonth() + 1);
       const d = pad(dateObj.getDate());
       const dateStr = `${y}-${m}-${d}`;
-
-      // Get time as minutes from midnight
       const mins = dateObj.getHours() * 60 + dateObj.getMinutes();
 
-      // Prepare results
-      let activeShifts = [];
+      let members = [];
 
-      // Check for each shift
-      for (const [shift, {start, end}] of Object.entries(shifts)) {
-        let [sh, sm] = start.split(":").map(Number);
-        let [eh, em] = end.split(":").map(Number);
-        let startMins = sh * 60 + sm;
-        let endMins = eh * 60 + em;
-
-        // Overnight shift (S3)
-        if (shift === "S3") {
-          // S3: 21:30 to next day 08:00
-          if (mins >= startMins || mins < endMins) {
-            // For times after midnight, we need to check previous day's S3
-            let lookupDate = mins < endMins
-              ? new Date(dateObj.getTime() - 86400000) // previous day
-              : dateObj;
-            const lookupY = lookupDate.getFullYear();
-            const lookupM = pad(lookupDate.getMonth() + 1);
-            const lookupD = pad(lookupDate.getDate());
-            const lookupDateStr = `${lookupY}-${lookupM}-${lookupD}`;
-            activeShifts.push({ shift, date: lookupDateStr });
+      // --- S1 and S2: check today's assignment ---
+      const today = shiftTable[dateStr];
+      if (today) {
+        // S1
+        let s1Start = 7 * 60 + 30, s1End = 15 * 60 + 30;
+        if (mins >= s1Start && mins < s1End) {
+          for (const member of team) {
+            if (today[member] === "S1") members.push({ name: member, shift: "S1" });
           }
-        } else {
-          if (mins >= startMins && mins < endMins) {
-            activeShifts.push({ shift, date: dateStr });
+        }
+        // S2
+        let s2Start = 13 * 60 + 30, s2End = 22 * 60;
+        if (mins >= s2Start && mins < s2End) {
+          for (const member of team) {
+            if (today[member] === "S2") members.push({ name: member, shift: "S2" });
           }
         }
       }
-      return activeShifts;
-    }
 
-    // Get members on shift for a given date/time
-    function getMembersOnShift(dateObj) {
-      const activeShifts = getActiveShifts(dateObj);
-      let members = [];
-      activeShifts.forEach(({shift, date}) => {
-        const dayTable = shiftTable[date];
-        if (!dayTable) return;
-        for (const member of team) {
-          if (dayTable[member] === shift) {
-            members.push({ name: member, shift });
+      // --- S3: check both today's and previous day's S3 assignment ---
+      // S3 runs 21:30–08:00 (overnight)
+      // If time is between 00:00–08:00, S3 is from previous day
+      // If time is between 21:30–23:59, S3 is today
+      let s3Start = 21 * 60 + 30, s3End = 8 * 60; // 1290, 480
+      if (mins < s3End) {
+        // After midnight, before 08:00: get previous day's S3
+        let prev = new Date(dateObj.getTime() - 24 * 60 * 60 * 1000);
+        const py = prev.getFullYear(), pm = pad(prev.getMonth() + 1), pd = pad(prev.getDate());
+        const prevDateStr = `${py}-${pm}-${pd}`;
+        const prevDay = shiftTable[prevDateStr];
+        if (prevDay) {
+          for (const member of team) {
+            if (prevDay[member] === "S3" && !members.find(m => m.name === member)) {
+              members.push({ name: member, shift: "S3" });
+            }
           }
         }
-      });
+      } else if (mins >= s3Start) {
+        // After 21:30: get today's S3
+        if (today) {
+          for (const member of team) {
+            if (today[member] === "S3" && !members.find(m => m.name === member)) {
+              members.push({ name: member, shift: "S3" });
+            }
+          }
+        }
+      }
+
       return members;
     }
 
@@ -191,11 +270,12 @@
       const members = getMembersOnShift(now);
       const resDiv = document.getElementById("currentShiftResult");
       if (members.length === 0) {
-        resDiv.innerHTML = "<span class='off'>No one is on shift right now.</span>";
+        resDiv.innerHTML = "<div class='no-shift'>No one is on shift right now.</div>";
       } else {
-        resDiv.innerHTML = `<ul class="shift-list">${members.map(m =>
-          `<li class="shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</li>`
-        ).join("")}</ul>`;
+        resDiv.innerHTML =
+          `<ul class="shift-list">${members.map(m =>
+            `<li><span class="shift-badge shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</span></li>`
+          ).join("")}</ul>`;
       }
     }
 
@@ -204,18 +284,19 @@
       const dateVal = document.getElementById("dateInput").value;
       const timeVal = document.getElementById("timeInput").value;
       if (!dateVal || !timeVal) {
-        document.getElementById("customShiftResult").innerHTML = "<span class='off'>Please select both date and time.</span>";
+        document.getElementById("customShiftResult").innerHTML =
+          "<div class='no-shift'>Please select both date and time.</div>";
         return;
       }
-      const [h, m] = timeVal.split(":").map(Number);
       const dateObj = new Date(dateVal + "T" + timeVal + ":00");
       const members = getMembersOnShift(dateObj);
       if (members.length === 0) {
-        document.getElementById("customShiftResult").innerHTML = "<span class='off'>No one is on shift at this time.</span>";
+        document.getElementById("customShiftResult").innerHTML =
+          "<div class='no-shift'>No one is on shift at this time.</div>";
       } else {
         document.getElementById("customShiftResult").innerHTML =
           `<ul class="shift-list">${members.map(m =>
-            `<li class="shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</li>`
+            `<li><span class="shift-badge shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</span></li>`
           ).join("")}</ul>`;
       }
     }
@@ -228,12 +309,8 @@
       for (const [date, shiftsObj] of Object.entries(shiftTable)) {
         html += `<tr><td>${date}</td>`;
         for (const m of team) {
-          const shift = shiftsObj[m];
-          if (shift === "OFF") {
-            html += `<td class="off-cell">OFF</td>`;
-          } else {
-            html += `<td class="shift-${shift.toLowerCase()}">${shift}</td>`;
-          }
+          const shift = shiftsObj[m] || "OFF";
+          html += `<td class="shift-${shift.toLowerCase()}">${shift}</td>`;
         }
         html += '</tr>';
       }
