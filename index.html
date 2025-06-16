@@ -1,52 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Content Example</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #f4f4f4;
-        }
-        img {
-            max-width: 300px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-width: 600px;
-            margin: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Shift Roster - Who is On Shift Now?</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 24px;
+      background: #f9f9f9;
+      color: #222;
+    }
+    h1 {
+      font-size: 1.6em;
+      margin-bottom: 0.5em;
+    }
+    #currentShift, #customShift {
+      background: #fff;
+      padding: 16px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .shift-list {
+      font-size: 1.1em;
+      margin: 0.5em 0 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .shift-list li {
+      margin: 0.2em 0;
+    }
+    .off {
+      color: #aaa;
+      font-style: italic;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 16px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    th {
+      background: #f2f2f2;
+    }
+    .shift-s1 { color: #1976d2; }
+    .shift-s2 { color: #c62828; }
+    .shift-s3 { color: #388e3c; }
+    .off-cell { color: #aaa; background: #f5f5f5; }
+    @media (max-width: 600px) {
+      table, th, td {
+        font-size: 0.82em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to My Random Page!</h1>
-        <p>
-            This is a demonstration of a simple HTML page with some random content. 
-            Below you'll find a random image, some sample text, and a list of interesting facts.
-        </p>
-        
-        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Random Nature Image">
+  <h1>Who is On Shift?</h1>
+  <div id="currentShift">
+    <b>Current Shift:</b>
+    <div id="currentShiftResult"></div>
+  </div>
+  <div id="customShift">
+    <b>Check Shift for Any Date and Time:</b><br>
+    <input type="date" id="dateInput">
+    <input type="time" id="timeInput" step="60">
+    <button onclick="checkCustomShift()">Check</button>
+    <div id="customShiftResult" style="margin-top:8px;"></div>
+  </div>
+  <details>
+    <summary style="font-weight:bold;cursor:pointer;">Show Full Shift Timetable</summary>
+    <div id="timetable"></div>
+  </details>
+  <script>
+    // Shift time definitions (24h format)
+    const shifts = {
+      S1: { start: "07:30", end: "15:30" },
+      S2: { start: "13:30", end: "22:00" },
+      S3: { start: "21:30", end: "08:00" } // Overnight
+    };
 
-        <h2>Did You Know?</h2>
-        <ul>
-            <li>Honey never spoils. Archaeologists have found edible honey in ancient Egyptian tombs!</li>
-            <li>The shortest war in history lasted 38 minutes (Anglo-Zanzibar War, 1896).</li>
-            <li>Octopuses have three hearts and blue blood.</li>
-        </ul>
+    // Team members
+    const team = ["Ashwin", "Dominic", "Hari", "Ashrith", "Manu"];
 
-        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="Random City Image">
+    // Shift table for June 2025 (extracted from your image and your correction for June 1)
+    // Format: "YYYY-MM-DD": { Name: "S1"/"S2"/"S3"/"OFF" }
+    const shiftTable = {
+      "2025-06-01": { Ashwin: "S2", Dominic: "S3", Hari: "S1", Ashrith: "OFF", Manu: "OFF" },
+      "2025-06-02": { Ashwin: "S2", Dominic: "S3", Hari: "S1", Ashrith: "OFF", Manu: "OFF" },
+      "2025-06-03": { Ashwin: "S1", Dominic: "OFF", Hari: "S2", Ashrith: "S1", Manu: "S3" },
+      "2025-06-04": { Ashwin: "S2", Dominic: "OFF", Hari: "OFF", Ashrith: "S1", Manu: "S3" },
+      "2025-06-05": { Ashwin: "OFF", Dominic: "S3", Hari: "S2", Ashrith: "S1", Manu: "S3" },
+      "2025-06-06": { Ashwin: "S3", Dominic: "OFF", Hari: "S2", Ashrith: "S1", Manu: "OFF" },
+      "2025-06-07": { Ashwin: "S3", Dominic: "S3", Hari: "OFF", Ashrith: "S2", Manu: "S2" },
+      "2025-06-08": { Ashwin: "S3", Dominic: "S3", Hari: "S3", Ashrith: "OFF", Manu: "S2" },
+      "2025-06-09": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "S3" },
+      "2025-06-10": { Ashwin: "S2", Dominic: "OFF", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
+      "2025-06-11": { Ashwin: "OFF", Dominic: "S2", Hari: "S3", Ashrith: "OFF", Manu: "S1" },
+      "2025-06-12": { Ashwin: "OFF", Dominic: "S3", Hari: "OFF", Ashrith: "S2", Manu: "S1" },
+      "2025-06-13": { Ashwin: "OFF", Dominic: "S3", Hari: "OFF", Ashrith: "S2", Manu: "S1" },
+      "2025-06-14": { Ashwin: "S2", Dominic: "S1", Hari: "S3", Ashrith: "OFF", Manu: "S2" },
+      "2025-06-15": { Ashwin: "S1", Dominic: "OFF", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
+      "2025-06-16": { Ashwin: "S1", Dominic: "OFF", Hari: "S3", Ashrith: "OFF", Manu: "S1" },
+      "2025-06-17": { Ashwin: "S1", Dominic: "S2", Hari: "S3", Ashrith: "OFF", Manu: "S1" },
+      "2025-06-18": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
+      "2025-06-19": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
+      "2025-06-20": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
+      "2025-06-21": { Ashwin: "OFF", Dominic: "S1", Hari: "S2", Ashrith: "S3", Manu: "OFF" },
+      "2025-06-22": { Ashwin: "S2", Dominic: "S1", Hari: "OFF", Ashrith: "OFF", Manu: "S3" },
+      "2025-06-23": { Ashwin: "OFF", Dominic: "S2", Hari: "S1", Ashrith: "OFF", Manu: "S3" },
+      "2025-06-24": { Ashwin: "S3", Dominic: "S3", Hari: "OFF", Ashrith: "S1", Manu: "OFF" },
+      "2025-06-25": { Ashwin: "OFF", Dominic: "OFF", Hari: "S1", Ashrith: "S3", Manu: "S2" },
+      "2025-06-26": { Ashwin: "OFF", Dominic: "OFF", Hari: "S2", Ashrith: "S1", Manu: "S3" },
+      "2025-06-27": { Ashwin: "OFF", Dominic: "S2", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
+      "2025-06-28": { Ashwin: "S2", Dominic: "S1", Hari: "S3", Ashrith: "OFF", Manu: "S2" },
+      "2025-06-29": { Ashwin: "S1", Dominic: "OFF", Hari: "S3", Ashrith: "S1", Manu: "OFF" },
+      "2025-06-30": { Ashwin: "S2", Dominic: "S3", Hari: "S1", Ashrith: "OFF", Manu: "OFF" }
+    };
 
-        <p>
-            <strong>Random Quote:</strong> "The best way to predict the future is to invent it." – Alan Kay
-        </p>
-    </div>
+    // Utility: pad number
+    function pad(n) { return n < 10 ? '0' + n : n; }
+
+    // Get shift for a given date and time
+    function getActiveShifts(dateObj) {
+      // Find date string for lookup
+      const y = dateObj.getFullYear();
+      const m = pad(dateObj.getMonth() + 1);
+      const d = pad(dateObj.getDate());
+      const dateStr = `${y}-${m}-${d}`;
+
+      // Get time as minutes from midnight
+      const mins = dateObj.getHours() * 60 + dateObj.getMinutes();
+
+      // Prepare results
+      let activeShifts = [];
+
+      // Check for each shift
+      for (const [shift, {start, end}] of Object.entries(shifts)) {
+        let [sh, sm] = start.split(":").map(Number);
+        let [eh, em] = end.split(":").map(Number);
+        let startMins = sh * 60 + sm;
+        let endMins = eh * 60 + em;
+
+        // Overnight shift (S3)
+        if (shift === "S3") {
+          // S3: 21:30 to next day 08:00
+          if (mins >= startMins || mins < endMins) {
+            // For times after midnight, we need to check previous day's S3
+            let lookupDate = mins < endMins
+              ? new Date(dateObj.getTime() - 86400000) // previous day
+              : dateObj;
+            const lookupY = lookupDate.getFullYear();
+            const lookupM = pad(lookupDate.getMonth() + 1);
+            const lookupD = pad(lookupDate.getDate());
+            const lookupDateStr = `${lookupY}-${lookupM}-${lookupD}`;
+            activeShifts.push({ shift, date: lookupDateStr });
+          }
+        } else {
+          if (mins >= startMins && mins < endMins) {
+            activeShifts.push({ shift, date: dateStr });
+          }
+        }
+      }
+      return activeShifts;
+    }
+
+    // Get members on shift for a given date/time
+    function getMembersOnShift(dateObj) {
+      const activeShifts = getActiveShifts(dateObj);
+      let members = [];
+      activeShifts.forEach(({shift, date}) => {
+        const dayTable = shiftTable[date];
+        if (!dayTable) return;
+        for (const member of team) {
+          if (dayTable[member] === shift) {
+            members.push({ name: member, shift });
+          }
+        }
+      });
+      return members;
+    }
+
+    // Display who is on shift now
+    function showCurrentShift() {
+      const now = new Date();
+      const members = getMembersOnShift(now);
+      const resDiv = document.getElementById("currentShiftResult");
+      if (members.length === 0) {
+        resDiv.innerHTML = "<span class='off'>No one is on shift right now.</span>";
+      } else {
+        resDiv.innerHTML = `<ul class="shift-list">${members.map(m =>
+          `<li class="shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</li>`
+        ).join("")}</ul>`;
+      }
+    }
+
+    // For custom date/time input
+    function checkCustomShift() {
+      const dateVal = document.getElementById("dateInput").value;
+      const timeVal = document.getElementById("timeInput").value;
+      if (!dateVal || !timeVal) {
+        document.getElementById("customShiftResult").innerHTML = "<span class='off'>Please select both date and time.</span>";
+        return;
+      }
+      const [h, m] = timeVal.split(":").map(Number);
+      const dateObj = new Date(dateVal + "T" + timeVal + ":00");
+      const members = getMembersOnShift(dateObj);
+      if (members.length === 0) {
+        document.getElementById("customShiftResult").innerHTML = "<span class='off'>No one is on shift at this time.</span>";
+      } else {
+        document.getElementById("customShiftResult").innerHTML =
+          `<ul class="shift-list">${members.map(m =>
+            `<li class="shift-${m.shift.toLowerCase()}">${m.name} (${m.shift})</li>`
+          ).join("")}</ul>`;
+      }
+    }
+
+    // Render timetable as table
+    function renderTimetable() {
+      let html = '<table><tr><th>Date</th>';
+      for (const m of team) html += `<th>${m}</th>`;
+      html += '</tr>';
+      for (const [date, shiftsObj] of Object.entries(shiftTable)) {
+        html += `<tr><td>${date}</td>`;
+        for (const m of team) {
+          const shift = shiftsObj[m];
+          if (shift === "OFF") {
+            html += `<td class="off-cell">OFF</td>`;
+          } else {
+            html += `<td class="shift-${shift.toLowerCase()}">${shift}</td>`;
+          }
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+      document.getElementById("timetable").innerHTML = html;
+    }
+
+    // On page load
+    showCurrentShift();
+    renderTimetable();
+
+    // Optional: auto-refresh current shift every minute
+    setInterval(showCurrentShift, 60000);
+  </script>
 </body>
 </html>
