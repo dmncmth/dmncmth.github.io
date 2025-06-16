@@ -369,32 +369,42 @@
             const dateStr = formatDate(date);
             const timeStr = formatTime(time);
             const activeShifts = [];
-
-            // Check current day shifts
-            if (shiftData[dateStr]) {
-                for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                    if (shift !== 'OFF' && isTimeInShift(timeStr, shift)) {
-                        activeShifts.push({ person, shift, day: dateStr });
-                    }
-                }
-            }
-
-            // Check previous day S3 shifts (overnight)
-            const prevDate = new Date(date);
-            prevDate.setDate(prevDate.getDate() - 1);
-            const prevDateStr = formatDate(prevDate);
-
-            if (shiftData[prevDateStr]) {
-                for (const [person, shift] of Object.entries(shiftData[prevDateStr])) {
-                    if (shift === 'S3') {
-                        const currentMinutes = timeToMinutes(timeStr);
-                        if (currentMinutes <= timeToMinutes('08:00')) {
+            const currentMinutes = timeToMinutes(timeStr);
+        
+            // For times between 00:00 and 08:00, only previous day's S3 is active
+            if (currentMinutes <= timeToMinutes('08:00')) {
+                // Check previous day S3 shifts (overnight)
+                const prevDate = new Date(date);
+                prevDate.setDate(prevDate.getDate() - 1);
+                const prevDateStr = formatDate(prevDate);
+        
+                if (shiftData[prevDateStr]) {
+                    for (const [person, shift] of Object.entries(shiftData[prevDateStr])) {
+                        if (shift === 'S3') {
                             activeShifts.push({ person, shift, day: prevDateStr });
                         }
                     }
                 }
+        
+                // For S1 and S2, still check current day
+                if (shiftData[dateStr]) {
+                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                        if (shift !== 'OFF' && shift !== 'S3' && isTimeInShift(timeStr, shift)) {
+                            activeShifts.push({ person, shift, day: dateStr });
+                        }
+                    }
+                }
+            } else {
+                // For times after 08:00, check current day shifts as usual
+                if (shiftData[dateStr]) {
+                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                        if (shift !== 'OFF' && isTimeInShift(timeStr, shift)) {
+                            activeShifts.push({ person, shift, day: dateStr });
+                        }
+                    }
+                }
             }
-
+        
             return activeShifts;
         }
 
