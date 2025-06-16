@@ -277,85 +277,79 @@
             return hours * 60 + minutes;
         }
 
-        // Corrected overlap logic for S3
-        function isTimeInShift(currentTime, shift, isPrevDay = false) {
+        // Fixed logic for checking if time is in shift
+        function isTimeInShift(currentTime, shift) {
             const currentMinutes = timeToMinutes(currentTime);
             const startMinutes = timeToMinutes(shiftTimes[shift].start);
             const endMinutes = timeToMinutes(shiftTimes[shift].end);
 
             if (shift === 'S3') {
-                if (isPrevDay) {
-                    // Previous day's S3: active from 00:00 to 08:00
-                    return currentMinutes < endMinutes;
-                } else {
-                    // Current day's S3: active from 21:30 to 23:59
-                    return currentMinutes >= startMinutes;
-                }
+                // S3 is overnight: 21:30 to 08:00 next day
+                // Current time is in S3 if it's >= 21:30 OR < 08:00
+                return currentMinutes >= startMinutes || currentMinutes < endMinutes;
             } else {
+                // Regular shifts: start <= current < end
                 return currentMinutes >= startMinutes && currentMinutes < endMinutes;
             }
         }
 
+        // Completely rewritten logic for active shifts
         function getActiveShifts(date, time) {
             const dateStr = formatDate(date);
             const timeStr = formatTime(time);
-            const activeShifts = [];
             const currentMinutes = timeToMinutes(timeStr);
+            const activeShifts = [];
 
+            // Check current day's shifts
+            if (shiftData[dateStr]) {
+                for (const [person, shift] of Object.entries(shiftData[dateStr])) {
+                    if (shift !== 'OFF') {
+                        if (shift === 'S3') {
+                            // For S3, check if current time is after 21:30
+                            if (currentMinutes >= timeToMinutes('21:30')) {
+                                activeShifts.push({ person, shift, day: dateStr });
+                            }
+                        } else {
+                            // For S1 and S2, use normal time check
+                            if (isTimeInShift(timeStr, shift)) {
+                                activeShifts.push({ person, shift, day: dateStr });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check previous day's S3 shift (if current time is before 08:00)
             if (currentMinutes < timeToMinutes('08:00')) {
-                // 00:00 - 07:59: Only previous day's S3, and current day's S1/S2
                 const prevDate = new Date(date);
                 prevDate.setDate(prevDate.getDate() - 1);
                 const prevDateStr = formatDate(prevDate);
 
                 if (shiftData[prevDateStr]) {
                     for (const [person, shift] of Object.entries(shiftData[prevDateStr])) {
-                        if (shift === 'S3' && isTimeInShift(timeStr, shift, true)) {
+                        if (shift === 'S3') {
+                            // Previous day's S3 is active until 08:00
                             activeShifts.push({ person, shift, day: prevDateStr });
                         }
                     }
                 }
-                if (shiftData[dateStr]) {
-                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                        if (shift !== 'OFF' && shift !== 'S3' && isTimeInShift(timeStr, shift, false)) {
-                            activeShifts.push({ person, shift, day: dateStr });
-                        }
-                    }
-                }
-            } else if (currentMinutes >= timeToMinutes('21:30')) {
-                // 21:30 - 23:59: Only current day's S3 and S2 (if overlap)
-                if (shiftData[dateStr]) {
-                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                        if (shift !== 'OFF' && (
-                            (shift === 'S3' && isTimeInShift(timeStr, shift, false)) ||
-                            (shift !== 'S3' && isTimeInShift(timeStr, shift, false))
-                        )) {
-                            activeShifts.push({ person, shift, day: dateStr });
-                        }
-                    }
-                }
-            } else {
-                // 08:00 - 21:29: Only current day's S1 and S2
-                if (shiftData[dateStr]) {
-                    for (const [person, shift] of Object.entries(shiftData[dateStr])) {
-                        if (shift !== 'OFF' && shift !== 'S3' && isTimeInShift(timeStr, shift, false)) {
-                            activeShifts.push({ person, shift, day: dateStr });
-                        }
-                    }
-                }
             }
+
             return activeShifts;
         }
 
         function updateCurrentShift() {
+            // Use IST timezone
             const now = new Date();
+            const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+            
             const currentTimeElement = document.getElementById('currentTime');
             const activeShiftElement = document.getElementById('activeShift');
             const currentlyOnShiftElement = document.getElementById('currentlyOnShift');
 
-            currentTimeElement.textContent = `Current Time: ${now.toLocaleString()}`;
+            currentTimeElement.textContent = `Current Time: ${istTime.toLocaleString()}`;
 
-            const activeShifts = getActiveShifts(now, now);
+            const activeShifts = getActiveShifts(istTime, istTime);
 
             if (activeShifts.length > 0) {
                 const shiftTypes = [...new Set(activeShifts.map(s => s.shift))];
@@ -453,10 +447,11 @@
             updateCurrentShift();
             setInterval(updateCurrentShift, 60000); // Update every minute
 
-            // Set default date and time to now
+            // Set default date and time to now (IST)
             const now = new Date();
-            document.getElementById('checkDate').value = formatDate(now);
-            document.getElementById('checkTime').value = formatTime(now);
+            const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+            document.getElementById('checkDate').value = formatDate(istTime);
+            document.getElementById('checkTime').value = formatTime(istTime);
         });
     </script>
 </body>
